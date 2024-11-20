@@ -142,17 +142,19 @@ public class Config {
         }
     }
         
-    public void deleteRecord(String sql, int id){       
+    public void deleteRecord(String sql, int id, boolean print){       
         try (Connection con = connectDB();
             PreparedStatement pst = con.prepareStatement(sql);){
             
             pst.setInt(1, id);
             int success = pst.executeUpdate();
 
-            if(success > 0){
-                System.out.println("\nRecord Successfully Deleted.");
-            }else{
-                System.out.println("\nNo Record Found with ID: " + id);
+            if (print){
+                if(success > 0){
+                    System.out.println("\nRecord Successfully Deleted.");
+                }else{
+                    System.out.println("\nNo Record Found with ID: " + id);
+                }
             }
 
         } catch (SQLException e) {
@@ -181,7 +183,7 @@ public class Config {
     }
     
     public String getDataFromID(String table, int id, String column){
-        String findID = "SELECT " + column + " FROM " + table + " WHERE ID = ?";
+        String findID = "SELECT " + column + " FROM " + table + " WHERE id = ?";
         String data = "";
         
         try (Connection con = connectDB();      

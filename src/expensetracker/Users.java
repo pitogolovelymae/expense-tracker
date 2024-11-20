@@ -22,28 +22,24 @@ public class Users {
 
             switch (option) {
                 case 1:
-                    System.out.println("\n   --- EDIT USER ---\n");
                     editUser(id);
                     break;
                 case 2:
-                    System.out.println("\n   --- DELETE USER ---\n");
+                    String password;
                     
-                    String response;
-                    while (true) {
-                        System.out.print("Delete User? (yes/no): ");
-                        response = scan.nextLine().trim().toLowerCase();
+                    System.out.print("\nDelete User? Enter Password to Confirm: ");
+                    password = scan.nextLine();
 
-                        switch (response) {
-                            case "yes":
-                                deleteUser(id);
-                                return; 
-                            case "no":
-                                System.out.println("User deletion cancelled.");
-                                return;
-                            default:
-                                System.out.println("Invalid input. Please enter 'yes' or 'no'.\n");
-                        }
+                    String username = conf.getDataFromID("users", id, "username");
+
+                    if (conf.validateLogin(username, password)){
+                        deleteUser(id);
+                        
+                    }else{
+                        System.out.println("Wrong Password. Account Deletion Failed.");
+                        return; 
                     }
+                    
                 case 3:
                     System.out.println("Going back..");
                     option = 3;
@@ -81,7 +77,7 @@ public class Users {
         String[] Headers = {"User ID", "Username", "Email"};
         String[] Columns = {"id", "username", "email"};
         
-        System.out.println("\n\t\t --- User Profile ---");
+        System.out.println("\n\t\t\t\t--- User Profile ---");
         conf.viewRecords(query, Headers, Columns);
     }
 
@@ -103,7 +99,10 @@ public class Users {
     private void deleteUser(int id) {
         
         String sql = "DELETE FROM users WHERE id = ?";
-        conf.deleteRecord(sql, id);
+        conf.deleteRecord(sql, id, true);
+        
+        String expSql = "DELETE FROM expenses WHERE user_id = ?";
+        conf.deleteRecord(expSql, id, false);
     }
 
     

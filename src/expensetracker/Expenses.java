@@ -1,5 +1,7 @@
 package expensetracker;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Expenses {
@@ -22,19 +24,15 @@ public class Expenses {
 
                 switch (option) {
                     case 1:
-                        System.out.println("\n   --- ADDING NEW EXPENSE ---\n");
                         addExpense(id);
                         break;
                     case 2:
-                        System.out.println("\n\t\t\t      --- EXPENSES LIST ---");
                         viewExpenses(id); 
                         break;
                     case 3:
-                        System.out.println("\n   --- EDIT EXPENSE ---\n");
-                        editExpense(id);
+                        editExpense();
                         break;
                     case 4:
-                        System.out.println("\n   --- DELETE EXPENSE ---\n");
                         deleteExpense();
                         break;
                     case 5:
@@ -62,22 +60,22 @@ public class Expenses {
         double amount = scan.nextDouble();
         scan.nextLine(); 
         
-        System.out.print("Date (YYYY-MM-DD): ");
-        String date = scan.nextLine();
-        
         String sql = "INSERT INTO expenses (user_id, category, amount, date) VALUES (?, ?, ?, ?)";       
-        conf.addRecord(sql, id, category, amount, date);
+        conf.addRecord(sql, id, category, amount, dateToday());
     }
 
     public void viewExpenses(int id) {
-        String query = "SELECT * FROM expenses WHERE user_id = " + id;
-        String[] Headers = {"Expense ID", "User ID", "Category", "Amount", "Date"};
-        String[] Columns = {"id", "user_id", "category", "amount", "date"};
+        String query = "SELECT id, category, amount, date FROM expenses WHERE user_id = " + id;
+        String[] Headers = {"Expense ID", "Category", "Amount", "Date"};
+        String[] Columns = {"id", "category", "amount", "date"};
         
+        
+        System.out.println("\nUsername : " + conf.getDataFromID("users", id, "username"));
+        System.out.println("Expenses List");
         conf.viewRecords(query, Headers, Columns);
     }
 
-    private void editExpense(int id) {
+    private void editExpense() {
         int ex_id;
         do {
             System.out.print("\nEnter Expense ID: ");
@@ -95,14 +93,11 @@ public class Expenses {
         
         System.out.print("New Amount: ");
         double amount = scan.nextDouble();
-        scan.nextLine(); 
-        
-        System.out.print("New Date (YYYY-MM-DD): ");
-        String date = scan.nextLine();
+        scan.nextLine();
         
         System.out.println("");
         String sql = "UPDATE expenses SET category = ?, amount = ?, date = ? WHERE id = ?";
-        conf.updateRecord(sql, category, amount, date, ex_id);
+        conf.updateRecord(sql, category, amount, dateToday(), ex_id);
     }
 
     private void deleteExpense() {
@@ -110,6 +105,11 @@ public class Expenses {
         int id = scan.nextInt();
         
         String sql = "DELETE FROM expenses WHERE id = ?";
-        conf.deleteRecord(sql, id);
+        conf.deleteRecord(sql, id, true);
+    }
+    
+    public String dateToday(){       
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd, yyyy");       
+        return LocalDateTime.now().format(format);
     }
 }

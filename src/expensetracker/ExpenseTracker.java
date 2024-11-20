@@ -65,7 +65,7 @@ public class ExpenseTracker {
                 System.out.println("2. Expenses");
                 System.out.println("3. Logout");
 
-                System.out.print("Enter Option: ");
+                System.out.print("\nEnter Option: ");
                 choice = scan.nextInt();
                 scan.nextLine();
                 
@@ -103,7 +103,7 @@ public class ExpenseTracker {
             System.out.println("\nLogin successful!");
             return conf.getID("SELECT id FROM users WHERE username = ?", username);
         } else {
-            System.out.println("Wrong Username or Password (:. Please try again.");
+            System.out.println("Wrong Username or Password. Please try again.");
             return 0;
         }
     }
